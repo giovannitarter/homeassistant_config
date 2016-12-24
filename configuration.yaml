@@ -19,8 +19,8 @@ frontend:
 http:
   # Uncomment this to add a password (recommended!)
     api_password: !env_var HA_PASSWORD
-  #ssl_certificate: /root/openmediavault-d8918953-d3f5-41c8-989e-c0db402f541f.crt
-  #ssl_key: /root/openmediavault-d8918953-d3f5-41c8-989e-c0db402f541f.key
+    ssl_certificate: !env_var HA_CERT
+    ssl_key: !env_var HA_KEY
 
 # Checks for available updates
 #updater:
