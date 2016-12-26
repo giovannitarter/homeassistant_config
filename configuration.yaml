@@ -7,6 +7,7 @@ homeassistant:
   unit_system: metric
   # Pick yours from here: http://en.wikipedia.org/wiki/List_of_tz_database_time_zones
   time_zone: Europe/Rome
+  #  customize: !include customize.yaml
 
 # Show links to resources in log and frontend
 #introduction:
@@ -18,9 +19,9 @@ frontend:
 
 http:
   # Uncomment this to add a password (recommended!)
-    api_password: !env_var HA_PASSWORD
-    ssl_certificate: !env_var HA_CERT
-    ssl_key: !env_var HA_KEY
+  #    api_password: !env_var HA_PASSWORD
+  #    ssl_certificate: !env_var HA_CERT
+  #    ssl_key: !env_var HA_KEY
 
 # Checks for available updates
 #updater:
@@ -44,8 +45,12 @@ sun:
 sensor:
   platform: yr
 
+google:
+    client_id: !env_var HA_G_CLIENT_ID
+    client_secret: !env_var HA_G_CLIENT_SECRET
 
 espdiscovery:
+
 
 
 mqtt:
@@ -64,4 +69,13 @@ mqtt:
         payload: 'offline'
         qos: 1
         retain: true
+
+automation:
+  trigger:
+    platform: time
+    after: "07:15:00"
+  action:
+    - service: climate.set_temperature
+      data:
+        temperature: 24
 

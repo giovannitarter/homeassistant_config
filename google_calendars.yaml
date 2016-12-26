@@ -1,0 +1,24 @@
+
+- cal_id: qh4jv4d0afnei45bdv33o2lgf8@group.calendar.google.com
+  entities:
+  - device_id: termostati
+    name: Termostati
+    track: true
+
+- cal_id: '#contacts@group.v.calendar.google.com'
+  entities:
+  - device_id: contacts
+    name: Contacts
+    track: false
+
+- cal_id: giovanni.tarter@gmail.com
+  entities:
+  - device_id: giovannitartergmailcom
+    name: giovanni.tarter@gmail.com
+    track: false
+
+- cal_id: it.italian#holiday@group.v.calendar.google.com
+  entities:
+  - device_id: festivita_in_italia
+    name: "Festivit\xE0 in Italia"
+    track: false
