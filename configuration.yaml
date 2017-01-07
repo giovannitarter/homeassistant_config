@@ -18,10 +18,10 @@ frontend:
 #zeroconf:
 
 http:
-  # Uncomment this to add a password (recommended!)
-  #    api_password: !env_var HA_PASSWORD
-  #    ssl_certificate: !env_var HA_CERT
-  #    ssl_key: !env_var HA_KEY
+ # Uncomment this to add a password (recommended!)
+ api_password: !env_var HA_PASSWORD
+ ssl_certificate: !env_var HA_CERT
+ ssl_key: !env_var HA_KEY
 
 # Checks for available updates
 #updater:
@@ -33,25 +33,23 @@ http:
 #conversation:
 
 # Enables support for tracking state changes over time.
-history:
+#history:
 
 # View all events in a logbook
-logbook:
+#logbook:
 
 # Track the sun
 sun:
 
 # Weather Prediction
-sensor:
-  platform: yr
+#sensor:
+#  platform: yr
 
-google:
-    client_id: !env_var HA_G_CLIENT_ID
-    client_secret: !env_var HA_G_CLIENT_SECRET
+#google:
+#    client_id: !env_var HA_G_CLIENT_ID
+#    client_secret: !env_var HA_G_CLIENT_SECRET
 
 espdiscovery:
-
-
 
 mqtt:
     broker: localhost
@@ -71,11 +69,76 @@ mqtt:
         retain: true
 
 automation:
+- alias: "work thermo on mattina"
+  hide_entity: True
   trigger:
     platform: time
-    after: "07:15:00"
+    after: "06:00:00"
+  condition:
+    condition: time
+    weekday:
+        - mon
+        - tue
+        - wed
+        - thu
+        - fri
   action:
     - service: climate.set_temperature
       data:
-        temperature: 24
+        temperature: 21
+
+- alias: "work thermo off mattina"
+  hide_entity: True
+  trigger:
+    platform: time
+    after: "07:30:00"
+  condition:
+    condition: time
+    weekday:
+        - mon
+        - tue
+        - wed
+        - thu
+        - fri
+  action:
+    - service: climate.set_temperature
+      data:
+        temperature: 13
+
+- alias: "work thermo on pomeriggio"
+  hide_entity: True
+  trigger:
+    platform: time
+    after: "16:00:00"
+  condition:
+    condition: time
+    weekday:
+        - mon
+        - tue
+        - wed
+        - thu
+        - fri
+  action:
+    - service: climate.set_temperature
+      data:
+        temperature: 21
+
+
+- alias: "work thermo off pomeriggio"
+  hide_entity: True
+  trigger:
+    platform: time
+    after: "20:30:00"
+  condition:
+    condition: time
+    weekday:
+        - mon
+        - tue
+        - wed
+        - thu
+        - fri
+  action:
+    - service: climate.set_temperature
+      data:
+        temperature: 13
 

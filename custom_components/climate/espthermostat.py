@@ -25,9 +25,9 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
     #sensor.temp_fcb4
     heater_entity_id = "switch.sw0_{}".format(name).lower()
     sensor_entity_id = "sensor.temp_{}".format(name).lower()
-    min_temp = 15
-    max_temp = 22
-    target_temp = 17
+    min_temp = 13
+    max_temp = 24
+    target_temp = 15
     ac_mode = False
     min_cycle_duration = timedelta(seconds = 10)
     tolerance = 0.5

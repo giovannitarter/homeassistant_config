@@ -45,8 +45,6 @@ def setup(hass, config):
             "type" : "humidity",
             "name" : devicename,
             })
-        tempgrp.update_tracked_entity_ids(
-                ["sensor.hum_{}".format(devicename)])
       
 
         load_platform(hass, 'sensor', "espthermostat", {
@@ -54,8 +52,6 @@ def setup(hass, config):
             "type" : "temperature",
             "name" : devicename,
             })
-        humgrp.update_tracked_entity_ids(
-                ["sensor.temp_{}".format(devicename)])
         
 
         load_platform(hass, 'climate', "espthermostat", {
@@ -74,7 +70,12 @@ def setup(hass, config):
         if payload not in discovered:
             discovered.append(payload)
             espthermostat_discovered(payload)
-    
+        
+        #deviceid[-4:].upper()
+        hument = ["sensor.hum_{}".format(d[-4:]) for d in discovered]
+        tempent = ["sensor.temp_{}".format(d[-4:]) for d in discovered]
+        humgrp.update_tracked_entity_ids(hument)
+        tempgrp.update_tracked_entity_ids(tempent)
     
 
     """Setup the component."""
