@@ -5,7 +5,7 @@ class HidableMQTTSW(mqsw.MqttSwitch):
 
     def __init__(self, hass, name, state_topic, command_topic, qos, retain,
             payload_on, payload_off, optimistic, value_template, hide):
-        super().__init__(hass, name, state_topic, command_topic, qos, retain,
+        super().__init__(name, state_topic, command_topic, qos, retain,
                 payload_on, payload_off, optimistic, value_template)
 
         self._hidden = hide

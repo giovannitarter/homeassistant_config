@@ -18,10 +18,9 @@ frontend:
 #zeroconf:
 
 http:
- # Uncomment this to add a password (recommended!)
- api_password: !env_var HA_PASSWORD
- ssl_certificate: !env_var HA_CERT
- ssl_key: !env_var HA_KEY
+ api_password: !secret http_password
+ ssl_certificate: /config/cert.pem
+ ssl_key: /config/privkey.pem
 
 # Checks for available updates
 #updater:
@@ -67,6 +66,12 @@ mqtt:
         payload: 'offline'
         qos: 1
         retain: true
+
+
+recorder:
+ # Delete events and states older than 2 weeks
+ purge_days: 14
+
 
 automation:
 - alias: "work thermo on mattina"

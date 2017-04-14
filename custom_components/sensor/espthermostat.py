@@ -28,7 +28,6 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
     add_devices(
                 [
                 mqse.MqttSensor(
-                    hass,
                     sens_name,
                     'devices/{}/{}'.format(
                         deviceid,
@@ -36,7 +35,9 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
                         ),
                     0,
                     measure_unit[senstype],
-                    None
+                    False,
+		    120,
+		    None	
                     ), 
                 ])
     

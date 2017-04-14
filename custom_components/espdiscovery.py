@@ -1,4 +1,4 @@
-from homeassistant.components.discovery import load_platform
+from homeassistant.helpers.discovery import load_platform
 from homeassistant.loader import get_component
 from homeassistant.helpers import discovery as hldisco
 import homeassistant.loader as loader
