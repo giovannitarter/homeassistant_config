@@ -1,4 +1,4 @@
-from homeassistant.components.discovery import load_platform
+from homeassistant.helpers.discovery import load_platform
 from homeassistant.loader import get_component
 from homeassistant.helpers import discovery as hldisco
 import homeassistant.loader as loader
@@ -13,7 +13,7 @@ def setup(hass, config):
     def espthermostat_discovered(hostname):
       
         deviceid = hostname 
-        devicename = deviceid[-4:].upper()
+        devicename = deviceid
         
         switchnr = "0"
         switch_name = "sw{}_{}".format(
@@ -72,8 +72,8 @@ def setup(hass, config):
             espthermostat_discovered(payload)
         
         #deviceid[-4:].upper()
-        hument = ["sensor.hum_{}".format(d[-4:]) for d in discovered]
-        tempent = ["sensor.temp_{}".format(d[-4:]) for d in discovered]
+        hument = ["sensor.hum_{}".format(d) for d in discovered]
+        tempent = ["sensor.temp_{}".format(d) for d in discovered]
         humgrp.update_tracked_entity_ids(hument)
         tempgrp.update_tracked_entity_ids(tempent)
     
