@@ -23,7 +23,6 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
             shortNames[senstype],
             friendlyname,
             )
-    sens_name = sens_name.upper()
 
     add_devices(
                 [
