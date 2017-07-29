@@ -38,8 +38,6 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
                     False,
                     120,
                     None	
-		    120,
-		    None	
                     ), 
                 ])
     
