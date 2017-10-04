@@ -127,8 +127,7 @@ def setup(hass, config):
     discovered = {}
     
     interval = dt.dt.timedelta(seconds=5)
-    #timeout = 120
-    timeout = 10
+    timeout = 180
     events.async_track_time_interval(hass, periodic, interval)
 
     mqtt = loader.get_component('mqtt')
