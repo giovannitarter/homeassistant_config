@@ -1,22 +1,24 @@
 import homeassistant.components.switch.mqtt as mqsw
 from homeassistant.helpers.entity import Entity
 
+
 class HidableMQTTSW(mqsw.MqttSwitch):
 
-    def __init__(self, hass, name, state_topic, command_topic, availability_topic,
-                    qos, retain, payload_on, payload_off, optimistic,
-                    payload_available, payload_not_available, value_template, hide):
+    def __init__(self, *args, **kwargs):
+        
+        self._hidden = kwargs.pop("hide")
+        super(HidableMQTTSW, self).__init__(*args, **kwargs)
+
     
-        super().__init__(name, state_topic, command_topic, availability_topic,
-                    qos, retain, payload_on, payload_off, optimistic,
-                    payload_available, payload_not_available, value_template)
-
-        self._hidden = hide
-
     @property
     def hidden(self) -> bool:
         return self._hidden
-
+    
+   
+    #@property
+    #def state_attributes(self):
+    #    """Return the attributes of the entity."""
+    #    return self._attributes
 
 
 def setup_platform(hass, config, add_devices, discovery_info=None):
@@ -26,8 +28,17 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
     switchnr = discovery_info["switchnr"]
     friendlyname = discovery_info["name"]
 
+    if hide == False:
+        # Listener to handle fired events
+        def handle_event(event):
+            mqttsw._hidden = event.data["hide"]
+            mqttsw.schedule_update_ha_state()
+
+        # Listen for when my_cool_event is fired
+        hass.bus.listen("espthermo.{}".format(deviceid), handle_event)
+    
     mqttsw = HidableMQTTSW(
-                 hass=hass,
+                 #hass=hass,
                  name=friendlyname,
                  state_topic="devices/{}/switch{}/state".format(
                      deviceid,

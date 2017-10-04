@@ -1,42 +1,54 @@
 import homeassistant.components.sensor.mqtt as mqse
 from homeassistant.const import TEMP_CELSIUS
 
-shortNames = {
-        "temperature" : "temp",
-        "humidity" : "hum",
-}
-
 measure_unit = {
         "temperature" : TEMP_CELSIUS,
         "humidity" : "%",
 }
 
 
+class HidableMQTTSE(mqse.MqttSensor):
+
+
+    def __init__(self, *args, **kwargs):
+        self._hidden = kwargs.pop("hide")
+        super(HidableMQTTSE, self).__init__(*args, **kwargs)
+        return
+
+
+    @property
+    def hidden(self) -> bool:
+        return self._hidden
+    
+    
 def setup_platform(hass, config, add_devices, discovery_info=None):
-    """Your switch/light specific code."""
     
     deviceid = discovery_info["deviceid"]
-    senstype = discovery_info["type"]
-    friendlyname = discovery_info["name"]
+    sens_type = discovery_info["type"]
+    sens_name = discovery_info["name"]
 
-    sens_name = "{}_{}".format(
-            shortNames[senstype],
-            friendlyname,
+
+    # Listener to handle fired events
+    def handle_event(event):
+        se._hidden = event.data["hide"]
+        se.schedule_update_ha_state()
+
+    # Listen for when my_cool_event is fired
+    hass.bus.listen("espthermo.{}".format(deviceid), handle_event)
+
+    se = HidableMQTTSE(         
+            sens_name,
+            'devices/{}/{}'.format(
+                deviceid,
+                sens_type
+                ),
+            0,
+            measure_unit[sens_type],
+            False,
+            120,
+            None,
+            hide=False
             )
 
-    add_devices(
-                [
-                mqse.MqttSensor(
-                    sens_name,
-                    'devices/{}/{}'.format(
-                        deviceid,
-                        senstype 
-                        ),
-                    0,
-                    measure_unit[senstype],
-                    False,
-                    120,
-                    None	
-                    ), 
-                ])
-    
+    add_devices([se])
+
