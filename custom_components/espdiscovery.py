@@ -8,76 +8,153 @@ import homeassistant.loader as loader
 import homeassistant.components.persistent_notification as pn
 
 
-DOMAIN = 'espdiscovery'
-DEPENDENCIES = ['mqtt']
+DOMAIN = "espdiscovery"
+SENS_TO_SW = "sens_to_switch"
+DEPENDENCIES = ["mqtt"]
 
 _LOGGER = logging.getLogger(__name__)
 
 
 def setup(hass, config):
     
-    
+    sens_to_switch_map = config[DOMAIN].get(SENS_TO_SW)
+    sens_boards = []
+    sw_boards = []
+    thermo_map = {}
+
+#    print("AAAAAAAAAAAAAAAAAAAAA")
+    if sens_to_switch_map is not None:
+        for brd in sens_to_switch_map:
+            
+            se = brd["sensor"]
+            if se not in sens_boards:
+                sens_boards.append(se)
+
+            sw = (brd["switch"], brd["switch_nr"])
+            if sw not in sw_boards:
+                sw_boards.append(sw)
+
+            thermo_map[se] = sw
+
+#    print("SENS_BOARDS: {}".format(sens_boards))
+#    print("SW_BOARDS: {}".format(sw_boards))
+#    print("THERMO_MAP: {}".format(thermo_map))
+#    print("AAAAAAAAAAAAAAAAAAAAA")
+   
+
     def espthermostat_discovered(hostname):
       
         res = []
-        deviceid = hostname 
-        devicename = deviceid
-        
-        switchnr = "0"
-        switch_name = "sw{}_{}".format(
-            switchnr,
-            devicename,
-            )
-        sw0_entity_id = "switch.{}".format(switch_name)
-        load_platform(hass, 'switch', "espthermostat", {
-            "deviceid" : deviceid,
-            "name" : switch_name,
-            "switchnr" : switchnr,
-            "hide" : True,
-            })
-        res.append(sw0_entity_id)
+        deviceid = hostname
 
-        switchnr = "1"
-        switch_name = "sw{}_{}".format(
-            switchnr,
-            devicename,
-            )
-        sw1_entity_id = "switch.{}".format(switch_name)
-        load_platform(hass, 'switch', "espthermostat", {
-            "deviceid" : deviceid,
-            "name" : switch_name,
-            "switchnr" : switchnr,
-            "hide" : False,
-            })
-        res.append(sw1_entity_id)
+        dev_type = "std"
+        if deviceid in sens_boards:
+            dev_type = "sen"
+        else:
+            for sw_id, sw_nr in sw_boards:
+                if deviceid == sw_id:
+                    dev_type = "sw"
+                    break
+
+        if dev_type == "std" or dev_type == "sen":
+            switchnr = "0"
+            switch_name = "sw{}_{}".format(
+                switchnr,
+                deviceid,
+                )
+            sw0_entity_id = "switch.{}".format(switch_name)
+            load_platform(hass, 'switch', "espthermostat", {
+                "deviceid" : deviceid,
+                "name" : switch_name,
+                "switchnr" : switchnr,
+                "hide" : True,
+                })
+            res.append(sw0_entity_id)
+
+            switchnr = "1"
+            switch_name = "sw{}_{}".format(
+                switchnr,
+                deviceid,
+                )
+            sw1_entity_id = "switch.{}".format(switch_name)
+            load_platform(hass, 'switch', "espthermostat", {
+                "deviceid" : deviceid,
+                "name" : switch_name,
+                "switchnr" : switchnr,
+                "hide" : False,
+                })
+            res.append(sw1_entity_id)
+            
+            sens_name = "hum_{}".format(deviceid)
+            hs_entity_id = "sensor.{}".format(sens_name)
+            load_platform(hass, 'sensor', "espthermostat", {
+                "deviceid" : deviceid,
+                "type" : "humidity",
+                "name" : sens_name,
+                })
+            res.append(hs_entity_id)
+
+            sens_name = "temp_{}".format(deviceid)
+            ts_entity_id = "sensor.{}".format(sens_name)
+            load_platform(hass, 'sensor', "espthermostat", {
+                "deviceid" : deviceid,
+                "type" : "temperature",
+                "name" : sens_name,
+                })
+            res.append(ts_entity_id)
        
-        sens_name = "hum_{}".format(deviceid)
-        hs_entity_id = "sensor.{}".format(sens_name)
-        load_platform(hass, 'sensor', "espthermostat", {
-            "deviceid" : deviceid,
-            "type" : "humidity",
-            "name" : sens_name,
-            })
-        res.append(hs_entity_id)
+            if dev_type == "std":
+                cl_entity_id = "clim_{}".format(deviceid)
+                load_platform(hass, 'climate', "espthermostat", {
+                    "deviceid" : deviceid,
+                    "sw_id" : sw0_entity_id,
+                    "ts_id" : ts_entity_id,
+                    })
+                res.append(cl_entity_id)
+            
+            else: 
+                
+                sw_id, sw_nr = thermo_map[deviceid]
+                sw_entity_id = "switch.sw{}_{}".format(sw_nr, sw_id)
 
-        sens_name = "temp_{}".format(deviceid)
-        ts_entity_id = "sensor.{}".format(sens_name)
-        load_platform(hass, 'sensor', "espthermostat", {
-            "deviceid" : deviceid,
-            "type" : "temperature",
-            "name" : sens_name,
-            })
-        res.append(ts_entity_id)
+                cl_entity_id = "clim_{}".format(deviceid)
+                load_platform(hass, 'climate', "espthermostat", {
+                    "deviceid" : deviceid,
+                    "sw_id" : sw_entity_id,
+                    "ts_id" : ts_entity_id,
+                    })
+                res.append(cl_entity_id)
+
         
-        cl_entity_id = "clim_{}".format(deviceid)
-        load_platform(hass, 'climate', "espthermostat", {
-            "name" : devicename,
-            "deviceid" : deviceid,
-            "sw_id" : sw0_entity_id,
-            "ts_id" : ts_entity_id,
-            })
-        res.append(cl_entity_id)
+        elif dev_type == "sw":
+            switchnr = "0"
+            switch_name = "sw{}_{}".format(
+                switchnr,
+                deviceid,
+                )
+            sw0_entity_id = "switch.{}".format(switch_name)
+            load_platform(hass, 'switch', "espthermostat", {
+                "deviceid" : deviceid,
+                "name" : switch_name,
+                "switchnr" : switchnr,
+                "hide" : True,
+                })
+            res.append(sw0_entity_id)
 
+            switchnr = "1"
+            switch_name = "sw{}_{}".format(
+                switchnr,
+                deviceid,
+                )
+            sw1_entity_id = "switch.{}".format(switch_name)
+            load_platform(hass, 'switch', "espthermostat", {
+                "deviceid" : deviceid,
+                "name" : switch_name,
+                "switchnr" : switchnr,
+                "hide" : True,
+                })
+            res.append(sw1_entity_id)
+       
         return res
     
     
