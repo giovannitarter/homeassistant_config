@@ -1,0 +1,73 @@
+- alias: "work thermo on mattina"
+  hide_entity: True
+  trigger:
+    platform: time
+    at: "06:00:00"
+  condition:
+    condition: time
+    weekday:
+        - mon
+        - tue
+        - wed
+        - thu
+        - fri
+  action:
+    - service: climate.set_temperature
+      data:
+        temperature: 21
+
+- alias: "work thermo off mattina"
+  hide_entity: True
+  trigger:
+    platform: time
+    at: "07:30:00"
+  condition:
+    condition: time
+    weekday:
+        - mon
+        - tue
+        - wed
+        - thu
+        - fri
+  action:
+    - service: climate.set_temperature
+      data:
+        temperature: 13
+
+- alias: "work thermo on pomeriggio"
+  hide_entity: True
+  trigger:
+    platform: time
+    at: "16:00:00"
+  condition:
+    condition: time
+    weekday:
+        - mon
+        - tue
+        - wed
+        - thu
+        - fri
+  action:
+    - service: climate.set_temperature
+      data:
+        temperature: 21
+
+
+- alias: "work thermo off pomeriggio"
+  hide_entity: True
+  trigger:
+    platform: time
+    at: "20:30:00"
+  condition:
+    condition: time
+    weekday:
+        - mon
+        - tue
+        - wed
+        - thu
+        - fri
+  action:
+    - service: climate.set_temperature
+      data:
+        temperature: 13
+

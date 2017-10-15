@@ -1,13 +1,10 @@
 homeassistant:
   # Name of the location where Home Assistant is running
   name: Home
-  # Location required to calculate the time the sun rises and sets
-  # Impacts weather/sunrise data (altitude above sea level in meters)
-  # metric for Metric, imperial for Imperial
   unit_system: metric
-  # Pick yours from here: http://en.wikipedia.org/wiki/List_of_tz_database_time_zones
   time_zone: Europe/Rome
   #  customize: !include customize.yaml
+
 
 # Show links to resources in log and frontend
 #introduction:
@@ -18,10 +15,11 @@ frontend:
 #zeroconf:
 
 http:
- base_url: pupillo.duckdns.org:8123
+ base_url: !secret base_url
  api_password: !secret http_password
  ssl_certificate: /config/cert.pem
  ssl_key: /config/privkey.pem
+    
 
 # Checks for available updates
 #updater:
@@ -81,78 +79,25 @@ recorder:
     purge_interval: 1
     purge_keep_days: 5
 
+wake_on_lan:
+
+media_player:
+  - platform: "kodi"
+    host: "192.168.1.7"
+    port: 8080
+
+    turn_on_action:
+      - service: "wake_on_lan.send_magic_packet"
+        data:
+            mac: !secret kodi_mac 
+            broadcast_address: "192.168.1.255"
+    
+    turn_off_action:
+      service: "media_player.kodi_call_method"
+      data:
+        entity_id: "media_player.kodi"
+        method: "System.Shutdown"
+
+
+automation: !include automation.yaml
  
-automation:
-- alias: "work thermo on mattina"
-  hide_entity: True
-  trigger:
-    platform: time
-    at: "06:00:00"
-  condition:
-    condition: time
-    weekday:
-        - mon
-        - tue
-        - wed
-        - thu
-        - fri
-  action:
-    - service: climate.set_temperature
-      data:
-        temperature: 21
-
-- alias: "work thermo off mattina"
-  hide_entity: True
-  trigger:
-    platform: time
-    at: "07:30:00"
-  condition:
-    condition: time
-    weekday:
-        - mon
-        - tue
-        - wed
-        - thu
-        - fri
-  action:
-    - service: climate.set_temperature
-      data:
-        temperature: 13
-
-- alias: "work thermo on pomeriggio"
-  hide_entity: True
-  trigger:
-    platform: time
-    at: "16:00:00"
-  condition:
-    condition: time
-    weekday:
-        - mon
-        - tue
-        - wed
-        - thu
-        - fri
-  action:
-    - service: climate.set_temperature
-      data:
-        temperature: 21
-
-
-- alias: "work thermo off pomeriggio"
-  hide_entity: True
-  trigger:
-    platform: time
-    at: "20:30:00"
-  condition:
-    condition: time
-    weekday:
-        - mon
-        - tue
-        - wed
-        - thu
-        - fri
-  action:
-    - service: climate.set_temperature
-      data:
-        temperature: 13
-
