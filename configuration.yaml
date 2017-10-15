@@ -54,6 +54,9 @@ espdiscovery:
         - sensor: "GIORNO"
           switch: "SW_BRD_0"
           switch_nr: "0" 
+        - sensor: "NOTTE"
+          switch: "SW_BRD_0"
+          switch_nr: "1" 
 
 
 mqtt:
