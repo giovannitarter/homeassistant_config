@@ -17,8 +17,8 @@ frontend:
 http:
  base_url: !secret base_url
  api_password: !secret http_password
- ssl_certificate: /config/cert.pem
- ssl_key: /config/privkey.pem
+ ssl_certificate: !secret ssl_certificate
+ ssl_key: !secret privkey
     
 
 # Checks for available updates
@@ -97,6 +97,25 @@ media_player:
       data:
         entity_id: "media_player.kodi"
         method: "System.Shutdown"
+
+
+group:
+    default_view:
+        view: yes
+        icon: mdi:home 
+        entities:
+            - group.climate
+            - group.temperature
+            - group.humidity
+            - group.thermosw
+            - group.thermo
+            - group.thermo_binse
+
+    media:
+        name: Media
+        view: yes
+        entities:
+          - "media_player.kodi"
 
 
 automation: !include automation.yaml

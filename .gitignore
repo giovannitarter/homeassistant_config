@@ -5,3 +5,5 @@ home-assistant_v2.db
 .HA_VERSION
 ha.log
 secrets.yaml
+*.swp
+*.pem

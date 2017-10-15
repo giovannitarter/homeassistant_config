@@ -22,7 +22,6 @@ def setup(hass, config):
     sw_boards = []
     thermo_map = {}
 
-#    print("AAAAAAAAAAAAAAAAAAAAA")
     if sens_to_switch_map is not None:
         for brd in sens_to_switch_map:
             
@@ -36,12 +35,7 @@ def setup(hass, config):
 
             thermo_map[se] = sw
 
-#    print("SENS_BOARDS: {}".format(sens_boards))
-#    print("SW_BOARDS: {}".format(sw_boards))
-#    print("THERMO_MAP: {}".format(thermo_map))
-#    print("AAAAAAAAAAAAAAAAAAAAA")
-   
-
+    
     def espthermostat_discovered(hostname):
       
         res = []
@@ -70,6 +64,20 @@ def setup(hass, config):
                 "hide" : True,
                 })
             res.append(sw0_entity_id)
+            thermosw_grp.update_tracked_entity_ids([sw0_entity_id])
+            
+            bins_entity_id = "binary_sensor.{}".format(deviceid)
+            load_platform(
+                    hass, 
+                    "binary_sensor", 
+                    "espthermostat", {
+                        "deviceid" : deviceid,
+                        "switch_id" : sw0_entity_id,
+                        "name" : switch_name,
+                        }
+                    )
+            res.append(bins_entity_id)
+            thermobin_grp.update_tracked_entity_ids([bins_entity_id])
 
             switchnr = "1"
             switch_name = "sw{}_{}".format(
@@ -84,6 +92,20 @@ def setup(hass, config):
                 "hide" : False,
                 })
             res.append(sw1_entity_id)
+            thermosw_grp.update_tracked_entity_ids([sw1_entity_id])
+            
+            bins_entity_id = "binary_sensor.{}".format(deviceid)
+            load_platform(
+                    hass, 
+                    "binary_sensor", 
+                    "espthermostat", {
+                        "deviceid" : deviceid,
+                        "switch_id" : sw1_entity_id,
+                        "name" : switch_name,
+                        }
+                    )
+            res.append(bins_entity_id)
+            thermobin_grp.update_tracked_entity_ids([bins_entity_id])
             
             sens_name = "hum_{}".format(deviceid)
             hs_entity_id = "sensor.{}".format(sens_name)
@@ -93,6 +115,7 @@ def setup(hass, config):
                 "name" : sens_name,
                 })
             res.append(hs_entity_id)
+            hum_grp.update_tracked_entity_ids([hs_entity_id])
 
             sens_name = "temp_{}".format(deviceid)
             ts_entity_id = "sensor.{}".format(sens_name)
@@ -102,28 +125,31 @@ def setup(hass, config):
                 "name" : sens_name,
                 })
             res.append(ts_entity_id)
+            temp_grp.update_tracked_entity_ids([ts_entity_id])
        
             if dev_type == "std":
-                cl_entity_id = "clim_{}".format(deviceid)
+                cl_entity_id = "climate.{}".format(deviceid)
                 load_platform(hass, 'climate', "espthermostat", {
                     "deviceid" : deviceid,
                     "sw_id" : sw0_entity_id,
                     "ts_id" : ts_entity_id,
                     })
                 res.append(cl_entity_id)
+                thermo_grp.update_tracked_entity_ids([cl_entity_id])
             
             else: 
                 
                 sw_id, sw_nr = thermo_map[deviceid]
                 sw_entity_id = "switch.sw{}_{}".format(sw_nr, sw_id)
 
-                cl_entity_id = "clim_{}".format(deviceid)
+                cl_entity_id = "climate.{}".format(deviceid)
                 load_platform(hass, 'climate', "espthermostat", {
                     "deviceid" : deviceid,
                     "sw_id" : sw_entity_id,
                     "ts_id" : ts_entity_id,
                     })
                 res.append(cl_entity_id)
+                thermo_grp.update_tracked_entity_ids([cl_entity_id])
 
         
         elif dev_type == "sw":
@@ -140,7 +166,21 @@ def setup(hass, config):
                 "hide" : True,
                 })
             res.append(sw0_entity_id)
-
+            thermosw_grp.update_tracked_entity_ids([sw0_entity_id])
+            
+            bins_entity_id = "binary_sensor.{}".format(deviceid)
+            load_platform(
+                    hass, 
+                    "binary_sensor", 
+                    "espthermostat", {
+                        "deviceid" : deviceid,
+                        "switch_id" : sw0_entity_id,
+                        "name" : switch_name,
+                        }
+                    )
+            res.append(bins_entity_id)
+            thermobin_grp.update_tracked_entity_ids([bins_entity_id])
+            
             switchnr = "1"
             switch_name = "sw{}_{}".format(
                 switchnr,
@@ -154,6 +194,20 @@ def setup(hass, config):
                 "hide" : True,
                 })
             res.append(sw1_entity_id)
+            thermosw_grp.update_tracked_entity_ids([sw1_entity_id])
+            
+            bins_entity_id = "binary_sensor.{}".format(deviceid)
+            load_platform(
+                    hass, 
+                    "binary_sensor", 
+                    "espthermostat", {
+                        "deviceid" : deviceid,
+                        "switch_id" : sw1_entity_id,
+                        "name" : switch_name,
+                        }
+                    )
+            res.append(bins_entity_id)
+            thermobin_grp.update_tracked_entity_ids([bins_entity_id])
        
         return res
     
@@ -174,11 +228,6 @@ def setup(hass, config):
             #    if e.find("sw0") == -1 :
             #        _LOGGER.info("UNHIDING entity {}".format(e))
         discovered[payload] = (dt.utcnow(), entities, True)
-
-        hument = ["sensor.hum_{}".format(d) for d in discovered]
-        tempent = ["sensor.temp_{}".format(d) for d in discovered]
-        humgrp.update_tracked_entity_ids(hument)
-        tempgrp.update_tracked_entity_ids(tempent)
   
 
     def periodic(firetime):
@@ -216,8 +265,16 @@ def setup(hass, config):
     topic = "espdiscovery"
     entity_id = ""
 
-    tempgrp = group.Group.create_group(hass, "Temperature", view=False)
-    humgrp = group.Group.create_group(hass, "Humidity", view=False)
+    thermo_grp = group.Group.create_group(hass, "Thermostats", 
+            view=False, object_id="thermo")
+    temp_grp = group.Group.create_group(hass, "Temperature", 
+            view=False, object_id="temperature")
+    hum_grp = group.Group.create_group(hass, "Humidity", 
+            view=False, object_id="humidity")
+    thermosw_grp = group.Group.create_group(hass, "Thermostats Switches", 
+            view=False, object_id="thermosw")
+    thermobin_grp = group.Group.create_group(hass, "Heaters Switches", 
+            view=False, object_id="thermo_binse")
     
     mqtt.subscribe(hass, topic, message_received)
 
