@@ -3,6 +3,9 @@ homeassistant:
   name: Home
   unit_system: metric
   time_zone: Europe/Rome
+  latitude: !secret latitude
+  longitude: !secret longitude
+  elevation: !secret elevation
   #  customize: !include customize.yaml
 
 
@@ -74,7 +77,6 @@ mqtt:
         qos: 1
         retain: true
 
-
 recorder:
     purge_interval: 1
     purge_keep_days: 5
@@ -109,14 +111,12 @@ group:
             - group.humidity
             - group.thermosw
             - group.thermo
-            - group.thermo_binse
 
     media:
         name: Media
         view: yes
         entities:
           - "media_player.kodi"
-
 
 automation: !include automation.yaml
  
