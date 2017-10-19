@@ -102,7 +102,7 @@ def setup(hass, config):
                 "hide" : True,
                 })
             res.append(sw0_entity_id)
-            thermosw_ent.append(sw0_entity_id)
+            #thermosw_ent.append(sw0_entity_id)
             
             switchnr = "1"
             switch_name = "sw{}_{}".format(
