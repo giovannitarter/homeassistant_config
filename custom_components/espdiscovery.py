@@ -8,6 +8,12 @@ import homeassistant.loader as loader
 import homeassistant.components.persistent_notification as pn
 
 
+#import voluptuous as vol
+#import homeassistant.helpers.config_validation as cv
+#from homeassistant.components.climate import PLATFORM_SCHEMA
+from datetime import timedelta
+
+
 DOMAIN = "espdiscovery"
 SENS_TO_SW = "sens_to_switch"
 DEPENDENCIES = ["mqtt"]
@@ -15,11 +21,44 @@ DEPENDENCIES = ["mqtt"]
 _LOGGER = logging.getLogger(__name__)
 
 
+CONF_MIN_TEMP = 'min_temp'
+CONF_MAX_TEMP = 'max_temp'
+CONF_TARGET_TEMP = 'target_temp'
+CONF_MIN_DUR = 'min_cycle_duration'
+CONF_TOLERANCE = 'tolerance'
+
+
+#PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
+#    vol.Optional(CONF_MAX_TEMP): vol.Coerce(float),
+#    vol.Optional(CONF_MIN_TEMP): vol.Coerce(float),
+#    vol.Optional(CONF_MIN_DUR): vol.All(cv.time_period, cv.positive_timedelta),
+#    #vol.Optional(CONF_TARGET_TEMP): vol.Coerce(float),
+#    vol.Optional(CONF_TOLERANCE, default=DEFAULT_TOLERANCE): vol.Coerce(float),
+#})
 
 
 def setup(hass, config):
     
-    sens_to_switch_map = config[DOMAIN].get(SENS_TO_SW)
+    cfg = config.get(DOMAIN)
+
+#    print(cfg)
+#    clim_opts = {
+#            "max_temp" : cfg.get(CONF_MAX_TEMP),
+#            "min_temp" : cfg.get(CONF_MIN_TEMP),
+#            "min_cycle_duration" : cfg.get(CONF_MIN_DUR),
+#            "target_temp" : cfg.get(CONF_MIN_TEMP),
+#            "tolerance" : cfg.get(CONF_TOLERANCE),
+#        }
+
+    clim_opts = {
+            "max_temp" : cfg["max_temp"],
+            "min_temp" : cfg["min_temp"],
+            "min_cycle_duration" : timedelta(seconds=cfg["min_cycle_duration"]),
+            "target_temp" : cfg["min_temp"],
+            "tolerance" : cfg["tolerance"],
+        }
+    
+    sens_to_switch_map = cfg.get(SENS_TO_SW)
     sens_boards = []
     sw_boards = []
     thermo_map = {}
@@ -154,11 +193,16 @@ def setup(hass, config):
             if dev_type == "std":
                 
                 cl_entity_id = "climate.{}".format(deviceid)
-                load_platform(hass, 'climate', "espthermostat", {
-                    "deviceid" : deviceid,
-                    "sw_id" : sw0,
-                    "ts_id" : tp,
-                    })
+                load_platform(
+                        hass, 
+                        'climate', 
+                        "espthermostat", 
+                        {
+                            "deviceid" : deviceid,
+                            "sw_id" : sw0,
+                            "ts_id" : tp,
+                        }.update(clim_opts)
+                    )
                 res.append(cl_entity_id)
                 thermo_ent.append(cl_entity_id)
             
@@ -168,11 +212,16 @@ def setup(hass, config):
                 sw_entity_id = "switch.sw{}_{}".format(sw_nr, sw_id)
 
                 cl_entity_id = "climate.{}".format(deviceid)
-                load_platform(hass, 'climate', "espthermostat", {
-                    "deviceid" : deviceid,
-                    "sw_id" : sw_entity_id,
-                    "ts_id" : tp,
-                    })
+                load_platform(
+                        hass, 
+                        'climate', 
+                        "espthermostat", 
+                        {
+                            "deviceid" : deviceid,
+                            "sw_id" : sw_entity_id,
+                            "ts_id" : tp,
+                        }.update(clim_opts)
+                        )
                 res.append(cl_entity_id)
                 thermo_ent.append(cl_entity_id)
 

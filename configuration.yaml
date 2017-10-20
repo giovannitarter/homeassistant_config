@@ -51,6 +51,10 @@ sun:
 #    client_secret: !env_var HA_G_CLIENT_SECRET
 
 espdiscovery:
+    max_temp: 24
+    min_temp: 13
+    min_cycle_duration: 30
+    tolerance: 0.5
     sens_to_switch:
         - sensor: "GIORNO"
           switch: "SW_BRD_0"

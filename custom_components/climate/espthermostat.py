@@ -21,12 +21,12 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
     
     heater_entity_id = discovery_info["sw_id"]
     sensor_entity_id = discovery_info["ts_id"]
-    min_temp = 13
-    max_temp = 24
-    target_temp = 13
+    max_temp = discovery_info["max_temp"]
+    min_temp = discovery_info["min_temp"]
+    min_cycle_duration = discovery_info["min_cycle_duration"]
+    target_temp = discovery_info["target_temp"]
+    tolerance = discovery_info["tolerance"]
     ac_mode = False
-    min_cycle_duration = timedelta(seconds = 30)
-    tolerance = 0.5
     
     # Listener to handle fired events
     def handle_event(event):
