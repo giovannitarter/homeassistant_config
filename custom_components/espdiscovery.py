@@ -72,7 +72,56 @@ def setup(hass, config):
     thermobin_ent = []
     thermobin_grp = group.Group.create_group(hass, "Heaters Switches", 
             view=False, object_id="thermo_binse")
+   
+
+    def load_temp_sensors(deviceid):
+       
+        sens_name = "temp_{}".format(deviceid)
+        ts_entity_id = "sensor.{}".format(sens_name)
+        load_platform(hass, 'sensor', "espthermostat", {
+            "deviceid" : deviceid,
+            "type" : "temperature",
+            "name" : sens_name,
+            })
+        temp_ent.append(ts_entity_id)
+        
+        return ts_entity_id
+
+
+    def load_hum_sensors(deviceid):
+       
+        sens_name = "hum_{}".format(deviceid)
+        hs_entity_id = "sensor.{}".format(sens_name)
+        load_platform(hass, 'sensor', "espthermostat", {
+            "deviceid" : deviceid,
+            "type" : "humidity",
+            "name" : sens_name,
+            })
+        hum_ent.append(hs_entity_id)
+        
+        return hs_entity_id
+            
     
+    def load_switch(deviceid, switchnr, hide):
+        
+        switch_name = "sw{}_{}".format(
+            switchnr,
+            deviceid,
+            )
+        sw_entity_id = "switch.{}".format(switch_name)
+        load_platform(hass, 'switch', "espthermostat", {
+            "deviceid" : deviceid,
+            "name" : switch_name,
+            "switchnr" : switchnr,
+            "hide" : hide,
+            })
+        #res.append(sw_entity_id)
+        
+        if not hide:
+            thermosw_ent.append(sw_entity_id)
+        
+        return sw_entity_id
+
 
     def espthermostat_discovered(hostname):
       
@@ -87,64 +136,28 @@ def setup(hass, config):
                 if deviceid == sw_id:
                     dev_type = "sw"
                     break
-   
-        if dev_type == "std" or dev_type == "sen":
-            switchnr = "0"
-            switch_name = "sw{}_{}".format(
-                switchnr,
-                deviceid,
-                )
-            sw0_entity_id = "switch.{}".format(switch_name)
-            load_platform(hass, 'switch', "espthermostat", {
-                "deviceid" : deviceid,
-                "name" : switch_name,
-                "switchnr" : switchnr,
-                "hide" : True,
-                })
-            res.append(sw0_entity_id)
-            #thermosw_ent.append(sw0_entity_id)
-            
-            switchnr = "1"
-            switch_name = "sw{}_{}".format(
-                switchnr,
-                deviceid,
-                )
-            sw1_entity_id = "switch.{}".format(switch_name)
-            load_platform(hass, 'switch', "espthermostat", {
-                "deviceid" : deviceid,
-                "name" : switch_name,
-                "switchnr" : switchnr,
-                "hide" : False,
-                })
-            res.append(sw1_entity_id)
-            thermosw_ent.append(sw1_entity_id)
-            
-            sens_name = "hum_{}".format(deviceid)
-            hs_entity_id = "sensor.{}".format(sens_name)
-            load_platform(hass, 'sensor', "espthermostat", {
-                "deviceid" : deviceid,
-                "type" : "humidity",
-                "name" : sens_name,
-                })
-            res.append(hs_entity_id)
-            hum_ent.append(hs_entity_id)
+  
+        tp = load_temp_sensors(deviceid)
+        res.append(tp)
+        
+        hs = load_hum_sensors(deviceid)
+        res.append(hs)
 
-            sens_name = "temp_{}".format(deviceid)
-            ts_entity_id = "sensor.{}".format(sens_name)
-            load_platform(hass, 'sensor', "espthermostat", {
-                "deviceid" : deviceid,
-                "type" : "temperature",
-                "name" : sens_name,
-                })
-            res.append(ts_entity_id)
-            temp_ent.append(ts_entity_id)
+        if dev_type == "std" or dev_type == "sen":
+            
+            sw0 = load_switch(deviceid, "0", True)
+            res.append(sw0)
+
+            sw1 = load_switch(deviceid, "1", False)
+            res.append(sw1)
        
             if dev_type == "std":
+                
                 cl_entity_id = "climate.{}".format(deviceid)
                 load_platform(hass, 'climate', "espthermostat", {
                     "deviceid" : deviceid,
-                    "sw_id" : sw0_entity_id,
-                    "ts_id" : ts_entity_id,
+                    "sw_id" : sw0,
+                    "ts_id" : tp,
                     })
                 res.append(cl_entity_id)
                 thermo_ent.append(cl_entity_id)
@@ -158,7 +171,7 @@ def setup(hass, config):
                 load_platform(hass, 'climate', "espthermostat", {
                     "deviceid" : deviceid,
                     "sw_id" : sw_entity_id,
-                    "ts_id" : ts_entity_id,
+                    "ts_id" : tp,
                     })
                 res.append(cl_entity_id)
                 thermo_ent.append(cl_entity_id)
@@ -166,38 +179,12 @@ def setup(hass, config):
         
         elif dev_type == "sw":
             
-            switchnr = "0"
-            switch_name = "sw{}_{}".format(
-                switchnr,
-                deviceid,
-                )
+            sw0 = load_switch(deviceid, "0", True)
+            res.append(sw0)
 
-            sw0_entity_id = "switch.{}".format(switch_name)
-            load_platform(hass, 'switch', "espthermostat", {
-                "deviceid" : deviceid,
-                "name" : switch_name,
-                "switchnr" : switchnr,
-                "hide" : True,
-                })
-            res.append(sw0_entity_id)
-            #thermosw_ent.append(sw0_entity_id)
+            sw1 = load_switch(deviceid, "1", True)
+            res.append(sw1)
             
-            switchnr = "1"
-            switch_name = "sw{}_{}".format(
-                switchnr,
-                deviceid,
-                )
-            sw1_entity_id = "switch.{}".format(switch_name)
-            load_platform(hass, 'switch', "espthermostat", {
-                "deviceid" : deviceid,
-                "name" : switch_name,
-                "switchnr" : switchnr,
-                "hide" : True,
-                })
-            res.append(sw1_entity_id)
-            #thermosw_ent.append(sw1_entity_id)
-            
-        
         thermo_grp.update_tracked_entity_ids(thermo_ent) 
         temp_grp.update_tracked_entity_ids(temp_ent)
         hum_grp.update_tracked_entity_ids(hum_ent)
