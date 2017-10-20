@@ -23,7 +23,7 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
     sensor_entity_id = discovery_info["ts_id"]
     max_temp = discovery_info["max_temp"]
     min_temp = discovery_info["min_temp"]
-    min_cycle_duration = discovery_info["min_cycle_duration"]
+    min_cycle_duration = timedelta(seconds=discovery_info["min_cycle_duration"])
     target_temp = discovery_info["target_temp"]
     tolerance = discovery_info["tolerance"]
     ac_mode = False

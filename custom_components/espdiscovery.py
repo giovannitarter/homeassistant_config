@@ -53,7 +53,7 @@ def setup(hass, config):
     clim_opts = {
             "max_temp" : cfg["max_temp"],
             "min_temp" : cfg["min_temp"],
-            "min_cycle_duration" : timedelta(seconds=cfg["min_cycle_duration"]),
+            "min_cycle_duration" : cfg["min_cycle_duration"],
             "target_temp" : cfg["min_temp"],
             "tolerance" : cfg["tolerance"],
         }
@@ -193,15 +193,19 @@ def setup(hass, config):
             if dev_type == "std":
                 
                 cl_entity_id = "climate.{}".format(deviceid)
+                discovery_info = {
+                        "deviceid" : deviceid,
+                        "sw_id" : sw0,
+                         "ts_id" : tp,
+                        }
+                for c in clim_opts:
+                    discovery_info[c] = clim_opts[c]
+
                 load_platform(
                         hass, 
                         'climate', 
-                        "espthermostat", 
-                        {
-                            "deviceid" : deviceid,
-                            "sw_id" : sw0,
-                            "ts_id" : tp,
-                        }.update(clim_opts)
+                        "espthermostat",
+                        discovery_info,
                     )
                 res.append(cl_entity_id)
                 thermo_ent.append(cl_entity_id)
@@ -211,16 +215,20 @@ def setup(hass, config):
                 sw_id, sw_nr = thermo_map[deviceid]
                 sw_entity_id = "switch.sw{}_{}".format(sw_nr, sw_id)
 
+                discovery_info = {
+                        "deviceid" : deviceid,
+                        "sw_id" : sw_entity_id,
+                        "ts_id" : tp,
+                        }
+                for c in clim_opts:
+                    discovery_info[c] = clim_opts[c]
+
                 cl_entity_id = "climate.{}".format(deviceid)
                 load_platform(
                         hass, 
                         'climate', 
-                        "espthermostat", 
-                        {
-                            "deviceid" : deviceid,
-                            "sw_id" : sw_entity_id,
-                            "ts_id" : tp,
-                        }.update(clim_opts)
+                        "espthermostat",
+                        discovery_info,
                         )
                 res.append(cl_entity_id)
                 thermo_ent.append(cl_entity_id)
