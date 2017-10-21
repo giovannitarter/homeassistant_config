@@ -110,6 +110,7 @@ group:
         view: yes
         icon: mdi:home 
         entities:
+            - binary_sensor.thermo_season
             - group.climate
             - group.temperature
             - group.humidity
@@ -121,6 +122,21 @@ group:
         view: yes
         entities:
           - "media_player.kodi"
+
+binary_sensor:
+  - platform: template
+    sensors:
+      "thermo_season":
+        friendly_name: "Active"
+        value_template: >- 
+            {{ 
+            as_timestamp(utcnow()) > 
+            as_timestamp(strptime("2017-10-10-UTC", "%Y-%m-%d-%Z")) 
+            and 
+            as_timestamp(utcnow()) < 
+            as_timestamp(strptime("2018-02-10-UTC", "%Y-%m-%d-%Z")) 
+            }}
+
 
 automation: !include automation.yaml
  

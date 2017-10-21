@@ -4,13 +4,17 @@
     platform: time
     at: "06:00:00"
   condition:
-    condition: time
-    weekday:
-        - mon
-        - tue
-        - wed
-        - thu
-        - fri
+        - condition: time
+          weekday:
+           - mon
+           - tue
+           - wed
+           - thu
+           - fri
+        - condition: state
+          entity_id: 'binary_sensor.thermo_season'
+          state: 'on'
+                
   action:
     - service: climate.set_temperature
       data:
@@ -22,13 +26,16 @@
     platform: time
     at: "07:30:00"
   condition:
-    condition: time
-    weekday:
-        - mon
-        - tue
-        - wed
-        - thu
-        - fri
+        - condition: time
+          weekday:
+           - mon
+           - tue
+           - wed
+           - thu
+           - fri
+        - condition: state
+          entity_id: 'binary_sensor.thermo_season'
+          state: 'on'
   action:
     - service: climate.set_temperature
       data:
@@ -40,13 +47,16 @@
     platform: time
     at: "16:00:00"
   condition:
-    condition: time
-    weekday:
-        - mon
-        - tue
-        - wed
-        - thu
-        - fri
+        - condition: time
+          weekday:
+           - mon
+           - tue
+           - wed
+           - thu
+           - fri
+        - condition: state
+          entity_id: 'binary_sensor.thermo_season'
+          state: 'on'
   action:
     - service: climate.set_temperature
       data:
@@ -59,13 +69,16 @@
     platform: time
     at: "20:30:00"
   condition:
-    condition: time
-    weekday:
-        - mon
-        - tue
-        - wed
-        - thu
-        - fri
+        - condition: time
+          weekday:
+           - mon
+           - tue
+           - wed
+           - thu
+           - fri
+        - condition: state
+          entity_id: 'binary_sensor.thermo_season'
+          state: 'on'
   action:
     - service: climate.set_temperature
       data:
