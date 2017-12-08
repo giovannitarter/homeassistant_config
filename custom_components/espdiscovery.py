@@ -25,7 +25,8 @@ CONF_MIN_TEMP = 'min_temp'
 CONF_MAX_TEMP = 'max_temp'
 CONF_TARGET_TEMP = 'target_temp'
 CONF_MIN_DUR = 'min_cycle_duration'
-CONF_TOLERANCE = 'tolerance'
+CONF_HOT_TOLERANCE = 'hot_tolerance'
+CONF_COLD_TOLERANCE = 'cold_tolerance'
 
 
 #PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
@@ -55,7 +56,8 @@ def setup(hass, config):
             "min_temp" : cfg["min_temp"],
             "min_cycle_duration" : cfg["min_cycle_duration"],
             "target_temp" : cfg["min_temp"],
-            "tolerance" : cfg["tolerance"],
+            "cold_tolerance" : cfg["cold_tolerance"],
+            "hot_tolerance" : cfg["hot_tolerance"],
         }
     
     sens_to_switch_map = cfg.get(SENS_TO_SW)
@@ -280,7 +282,7 @@ def setup(hass, config):
                 if delta.total_seconds() > timeout:
                     discovered[p] = (last_update, entries, False)
                     _LOGGER.info("HIDING thermo {}".format(p))
-                    pn.create(hass, "thermo {} disappeared".format(p), "THERMO")
+                    pn.create(hass, "thermo {} disappeared at {}".format(p, firetime), "THERMO")
                     hass.bus.fire("espthermo.{}".format(p), {"hide":True})
                     #for e in entries:
                     #    _LOGGER.info("HIDING entity {}".format(e))

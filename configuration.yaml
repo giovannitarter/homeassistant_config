@@ -54,7 +54,8 @@ espdiscovery:
     max_temp: 24
     min_temp: 13
     min_cycle_duration: 30
-    tolerance: 0.5
+    cold_tolerance: 0.5
+    hot_tolerance: 0.5
     sens_to_switch:
         - sensor: "GIORNO"
           switch: "SW_BRD_0"
@@ -131,7 +132,7 @@ binary_sensor:
         value_template: >- 
             {{ 
             as_timestamp(utcnow()) > 
-            as_timestamp(strptime("2017-10-10-UTC", "%Y-%m-%d-%Z")) 
+            as_timestamp(strptime("2017-11-12-UTC", "%Y-%m-%d-%Z")) 
             and 
             as_timestamp(utcnow()) < 
             as_timestamp(strptime("2018-02-10-UTC", "%Y-%m-%d-%Z")) 

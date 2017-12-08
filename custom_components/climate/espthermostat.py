@@ -25,7 +25,8 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
     min_temp = discovery_info["min_temp"]
     min_cycle_duration = timedelta(seconds=discovery_info["min_cycle_duration"])
     target_temp = discovery_info["target_temp"]
-    tolerance = discovery_info["tolerance"]
+    hot_tolerance = discovery_info["hot_tolerance"]
+    cold_tolerance = discovery_info["cold_tolerance"]
     ac_mode = False
     
     # Listener to handle fired events
@@ -46,7 +47,8 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
             target_temp=target_temp, 
             ac_mode=ac_mode, 
             min_cycle_duration=min_cycle_duration,
-            tolerance=tolerance,
+            cold_tolerance=cold_tolerance,
+            hot_tolerance=hot_tolerance,
             keep_alive=None,
             hide=False
             )
