@@ -1,0 +1,12 @@
+
+- cal_id: <FILL HERE> 
+  entities:
+  - device_id: termostati
+    name: Termostati
+    track: true
+
+- cal_id: it.italian#holiday@group.v.calendar.google.com
+  entities:
+  - device_id: festivita_in_italia
+    name: "Festivit\xE0 in Italia"
+    track: true
