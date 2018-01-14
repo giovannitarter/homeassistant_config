@@ -50,6 +50,7 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
             cold_tolerance=cold_tolerance,
             hot_tolerance=hot_tolerance,
             keep_alive=None,
+            initial_operation_mode="auto",
             hide=False
             )
 
