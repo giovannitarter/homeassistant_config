@@ -1,86 +1,91 @@
-- alias: "work thermo on mattina"
-  hide_entity: True
+- alias: "thermo on"
+  hide_entity: False
   trigger:
-    platform: time
-    at: "05:45:00"
+    - platform: state
+      entity_id: calendar.termostati
+      from: "off"
+      to: "on"
+    
+    - platform: event
+      event_type: telegram_command
+      event_data:
+        command: '/on'
+
+    - platform: event
+      event_type: telegram_callback
+      event_data:
+        data: '/on'
+  
   condition:
-        - condition: time
-          weekday:
-           - mon
-           - tue
-           - wed
-           - thu
-           - fri
-        - condition: state
-          entity_id: 'binary_sensor.thermo_season'
-          state: 'on'
-                
+    - condition: state
+      entity_id: 'binary_sensor.thermo_season'
+      state: 'on'
+
   action:
     - service: climate.set_temperature
       data:
-        temperature: 21
+        temperature: 19
+    - service: notify.notifier_test
+      data:
+        title: 'Termostati'
+        message: 'Thermo on'
 
-- alias: "work thermo off mattina"
-  hide_entity: True
+
+- alias: "thermo off"
+  hide_entity: False
   trigger:
-    platform: time
-    at: "06:30:00"
+    - platform: state
+      entity_id: calendar.termostati
+      from: "on"
+      to: "off"
+    
+    - platform: event
+      event_type: telegram_command
+      event_data:
+        command: '/off'
+    
+    - platform: event
+      event_type: telegram_callback
+      event_data:
+        data: '/off'
+
   condition:
-        - condition: time
-          weekday:
-           - mon
-           - tue
-           - wed
-           - thu
-           - fri
-        - condition: state
-          entity_id: 'binary_sensor.thermo_season'
-          state: 'on'
+    - condition: state
+      entity_id: 'binary_sensor.thermo_season'
+      state: 'on'
+
   action:
     - service: climate.set_temperature
       data:
         temperature: 13
+    - service: notify.notifier_test
+      data:
+        title: 'Termostati'
+        message: 'Thermo off'
 
-#- alias: "work thermo on pomeriggio"
-#  hide_entity: True
-#  trigger:
-#    platform: time
-#    at: "16:00:00"
-#  condition:
-#        - condition: time
-#          weekday:
-#           - mon
-#           - tue
-#           - wed
-#           - thu
-#           - fri
-#        - condition: state
-#          entity_id: 'binary_sensor.thermo_season'
-#          state: 'on'
-#  action:
-#    - service: climate.set_temperature
-#      data:
-#        temperature: 21
-#
-#
-#- alias: "work thermo off pomeriggio"
-#  hide_entity: True
-#  trigger:
-#    platform: time
-#    at: "20:30:00"
-#  condition:
-#        - condition: time
-#          weekday:
-#           - mon
-#           - tue
-#           - wed
-#           - thu
-#           - fri
-#        - condition: state
-#          entity_id: 'binary_sensor.thermo_season'
-#          state: 'on'
-#  action:
-#    - service: climate.set_temperature
-#      data:
-#        temperature: 13
+
+- alias: "thermo status"
+  
+  trigger:
+    - platform: event
+      event_type: telegram_command
+      event_data:
+        command: '/status'
+    
+    - platform: event
+      event_type: telegram_callback
+      event_data:
+        data: '/status'
+  
+  action:
+    service: notify.notifier_test
+    data:
+        message: >
+             Giorno: {{states.sensor.temp_giorno.state}} {{states.climate.giorno.state}}
+             Notte: {{states.sensor.temp_notte.state}} {{states.climate.notte.state}}
+        data:
+            inline_keyboard:
+                - "/status"
+                - "/on, /off" 
+
 

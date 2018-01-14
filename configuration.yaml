@@ -22,10 +22,10 @@ http:
  api_password: !secret http_password
  ssl_certificate: !secret ssl_certificate
  ssl_key: !secret privkey
-    
+
 
 # Checks for available updates
-#updater:
+updater:
 
 # Discover some devices automatically
 #discovery:
@@ -46,9 +46,26 @@ sun:
 #sensor:
 #  platform: yr
 
-#google:
-#    client_id: !env_var HA_G_CLIENT_ID
-#    client_secret: !env_var HA_G_CLIENT_SECRET
+google:
+    client_id: !secret google_client_id
+    client_secret: !secret google_client_secret
+    track_new_calendar: false
+
+
+telegram_bot:
+  - platform: polling
+    api_key: !secret telegram_api_key
+    allowed_chat_ids:
+      - !secret telegram_group_chat_id
+      - !secret telegram_chat_id_tg
+      - !secret telegram_chat_id_ma
+
+
+notify:
+  - name: notifier_test
+    platform: telegram
+    chat_id: !secret telegram_group_chat_id
+
 
 espdiscovery:
     max_temp: 24
@@ -123,6 +140,15 @@ group:
         view: yes
         entities:
           - "media_player.kodi"
+  
+    automation_view:
+        name: Automation
+        view: yes
+        entities:
+            - calendar.termostati
+            - automation.thermo_on
+            - automation.thermo_off
+            - automation.telegram_test
 
 binary_sensor:
   - platform: template
