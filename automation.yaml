@@ -86,6 +86,6 @@
         data:
             inline_keyboard:
                 - "/status"
-                - "/on, /off" 
+                - "/on,/off" 
 
 
