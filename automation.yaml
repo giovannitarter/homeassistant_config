@@ -1,3 +1,26 @@
+
+
+- alias: "thermo_on_1h"
+  hide_entity: False
+  trigger:
+    - platform: event
+      event_type: telegram_command
+      event_data:
+        command: "/on 1h"
+
+    - platform: event
+      event_type: telegram_callback
+      event_data:
+        data: "/on 1h"
+  
+  action:
+    - service: automation.trigger
+      entity_id: "automation.thermo_on"
+    
+    - service: timer.start
+      entity_id: "timer.thermo_off_1h"
+
+
 - alias: "thermo on"
   hide_entity: False
   trigger:
@@ -27,9 +50,10 @@
         temperature: 19
     - service: notify.notifier_test
       data:
-        title: 'Termostati'
-        message: 'Thermo on'
-
+          message: 'Thermo off'
+          data:
+              inline_keyboard:
+                  - "/off"
 
 - alias: "thermo off"
   hide_entity: False
@@ -42,12 +66,17 @@
     - platform: event
       event_type: telegram_command
       event_data:
-        command: '/off'
+        command: "/off"
     
     - platform: event
       event_type: telegram_callback
       event_data:
-        data: '/off'
+        data: "/off"
+    
+    - platform: event
+      event_type: timer.finished
+      event_data: 
+        entity_id: "timer.thermo_off_1h"
 
   condition:
     - condition: state
@@ -60,8 +89,10 @@
         temperature: 13
     - service: notify.notifier_test
       data:
-        title: 'Termostati'
         message: 'Thermo off'
+        data:
+            inline_keyboard:
+                - "/status"
 
 
 - alias: "thermo status"
@@ -87,5 +118,5 @@
             inline_keyboard:
                 - "/status"
                 - "/on,/off" 
-
+                - "/on 1h"
 
