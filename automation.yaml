@@ -50,7 +50,7 @@
         temperature: 19
     - service: notify.notifier_test
       data:
-          message: 'Thermo off'
+          message: 'Thermo On'
           data:
               inline_keyboard:
                   - "/off"
@@ -89,7 +89,7 @@
         temperature: 13
     - service: notify.notifier_test
       data:
-        message: 'Thermo off'
+        message: 'Thermo Off'
         data:
             inline_keyboard:
                 - "/status"
