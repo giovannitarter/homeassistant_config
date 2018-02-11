@@ -47,7 +47,11 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
             False,
             120,
             None,
-            hide=False
+            hide=False,
+            json_attributes="", 
+            availability_topic=None, 
+            payload_available="online",
+            payload_not_available="offline"
             )
 
     add_devices([se])

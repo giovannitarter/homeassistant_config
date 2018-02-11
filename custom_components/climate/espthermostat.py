@@ -51,7 +51,8 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
             hot_tolerance=hot_tolerance,
             keep_alive=None,
             initial_operation_mode="auto",
-            hide=False
+            hide=False,
+            away_temp=None
             )
 
     add_devices([mythermo])
